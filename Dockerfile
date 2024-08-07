@@ -1,24 +1,13 @@
-# Menggunakan image JDK 21 sebagai base image untuk membangun aplikasi
-FROM openjdk:21-jdk AS build
+FROM openjdk:17-jdk-slim AS build
 
-# Set working directory
-WORKDIR /app
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
+RUN ./mvnw dependency:resolve
 
-# Menyalin file pom.xml dan kode sumber ke dalam image
-COPY pom.xml .
-COPY src ./src
+COPY src src
+RUN ./mvnw package
 
-# Membuat file JAR aplikasi
-RUN ./mvnw package -DskipTests
-
-# Menggunakan image JRE 21 sebagai base image untuk menjalankan aplikasi
-FROM openjdk:21-jre
-
-# Set working directory
-WORKDIR /app
-
-# Menyalin file JAR dari tahap build
-COPY --from=build /app/target/*.jar app.jar
-
-# Menentukan perintah untuk menjalankan aplikasi
-ENTRYPOINT ["java", "-jar", "app.jar"]
+FROM openjdk:17-jdk-slim
+WORKDIR demo
+COPY --from=build target/*.jar demo.jar
+ENTRYPOINT ["java", "-jar", "demo.jar"]
