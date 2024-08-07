@@ -1,5 +1,5 @@
-# Menggunakan image JDK 22 sebagai base image untuk membangun aplikasi
-FROM openjdk:22-jdk AS build
+# Menggunakan image JDK 21 sebagai base image untuk membangun aplikasi
+FROM openjdk:21-jdk AS build
 
 # Set working directory
 WORKDIR /app
@@ -11,8 +11,8 @@ COPY src ./src
 # Membuat file JAR aplikasi
 RUN ./mvnw package -DskipTests
 
-# Menggunakan image JRE 22 sebagai base image untuk menjalankan aplikasi
-FROM openjdk:22-jre
+# Menggunakan image JRE 21 sebagai base image untuk menjalankan aplikasi
+FROM openjdk:21-jre
 
 # Set working directory
 WORKDIR /app
