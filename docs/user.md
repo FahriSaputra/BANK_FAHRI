@@ -13,13 +13,14 @@ nomor handphone
 
 ## Get All Nasabah
 
-End Point : GET /api/users
+End Point : GET /api/v1/users
 
 Response Body :
 
 ```json
 {
-  "status": "success",
+  "status": 200,
+  "message": "success",
   "error": null,
   "data": [
     {
@@ -36,14 +37,15 @@ Response Body :
 
 ## Get Nasabah
 
-End Point : GET /api/users/{uuid}
+End Point : GET /api/v1/users/{uuid}
 
 Response Body :
 
 ```json
 {
-  "status": "success",
+  "status": 200,
   "error": null,
+  "message": "success",
   "data": {
     "id_card": 3213216487327,
     "full_name": "Fahri Saputra",
@@ -55,11 +57,20 @@ Response Body :
 }
 ```
 
+Response Body (Not Found):
 
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "User Not Found",
+  "data": null
+}
+```
 
 ## Post Nasabah
 
-End Point : POST /api/users
+End Point : POST /api/v1/users
 
 Request Body :
 
@@ -80,25 +91,16 @@ Response Body (Success) :
 
 ```json
 {
-  "status": "success",
+  "status": 200,
   "error": null,
-  "data": "success"
+  "message": "success",
+  "data": null,
 }
 ```
 
-Response Body (Failed) :
+## Patch Nasabah
 
-```json
-{
-  "status": "error",
-  "error": "error message",
-  "data": null
-}
-```
-
-## Put Nasabah
-
-End Point : PATCH /api/users/{id_card}
+End Point : PATCH /api/v1/users/{id_card}
 
 Request Body :
 
@@ -119,9 +121,10 @@ Response Body (success) :
 
 ```json
 {
-  "status": "success",
+  "data": null,
   "error": null,
-  "data": "success"
+  "status": 200,
+  "message": "success"
 }
 ```
 
@@ -129,23 +132,25 @@ Response Body (Failed) :
 
 ```json
 {
-  "status": "error",
+  "data": null,
   "error": "error message",
-  "data": null
+  "status": 500,
+  "message": "Internal Server Error"
 }
 ```
 
 ## Delete Nasabah
 
-End Point : DELETE /api/users/{id_card}
+End Point : DELETE /api/v1/users/{id_card}
 
 Response Body : 
 
 ```json 
 {
-  "status": "success",
-  "error": "error message",
-  "data": null
+  "data": null,
+  "error": null,
+  "status": 200,
+  "message": "success"
 }
 ```
 
@@ -153,9 +158,10 @@ Response Body (Failed) :
 
 ```json
 {
-  "status": "error",
+  "data": null,
   "error": "error message",
-  "data": null
+  "status": 500,
+  "message": "Internal Server Error"
 }
 ```
 
