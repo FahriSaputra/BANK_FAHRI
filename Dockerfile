@@ -1,29 +1,31 @@
-# Menggunakan image JDK 17 sebagai base image untuk membangun aplikasi
-FROM openjdk:17-jdk-slim AS build
+# Tahap build: menggunakan Maven dengan Java 17
+FROM maven:3.8-openjdk-17 AS build
 
-# Set working directory
+# Set direktori kerja di dalam container
 WORKDIR /app
 
-# Menyalin file pom.xml dan kode sumber ke dalam image
+# Salin pom.xml dan file lainnya yang diperlukan
 COPY pom.xml .
+
+# Salin direktori src
 COPY src ./src
-COPY mvnw .
-COPY .mvn .mvn
 
-# Mengatur izin eksekusi untuk mvnw
-RUN chmod +x ./mvnw
+# Bangun aplikasi
+RUN mvn clean package -DskipTests
 
-# Menjalankan perintah Maven untuk membangun aplikasi
-RUN ./mvnw package -DskipTests
+# Tahap runtime: menggunakan OpenJDK 17 untuk menjalankan aplikasi
+FROM openjdk:17-jdk-slim
 
-# Menggunakan image JRE 17 sebagai base image untuk menjalankan aplikasi
-FROM openjdk:17-jre-slim
-
-# Set working directory
+# Set direktori kerja di dalam container
 WORKDIR /app
 
-# Menyalin file JAR dari tahap build
-COPY --from=build /app/target/*.jar app.jar
+# Salin file jar yang telah dibangun dari tahap sebelumnya
+COPY --from=build /app/target/BANK-FAHRI-0.0.1-SNAPSHOT.jar BANK-FAHRI.jar
 
-# Menentukan perintah untuk menjalankan aplikasi
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Variabel lingkungan untuk konfigurasi database
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bank
+ENV SPRING_DATASOURCE_USERNAME=root
+ENV SPRING_DATASOURCE_PASSWORD=root
+
+# Perintah untuk menjalankan aplikasi
+ENTRYPOINT ["java", "-jar", "BANK-FAHRI.jar"]
