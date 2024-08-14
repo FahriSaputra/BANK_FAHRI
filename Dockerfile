@@ -1,5 +1,5 @@
 # Tahap build: menggunakan Maven dengan Java 17
-FROM jkt-tkgiharbor.hq.bni.co.id/library-ocp/maven:3.8.1-openjdk-11-slim AS build
+FROM jtl-tkgiharbor.hq.bni.co.id/wss-dev/maven:3.8.5-openjdk-17-slim AS builder
 
 # Set direktori kerja di dalam container
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Tahap runtime: menggunakan OpenJDK 17 untuk menjalankan aplikasi
-FROM jkt-tkgiharbor.hq.bni.co.id/library-ocp/openjdk:11-jre-slim
+FROM jtl-tkgiharbor.hq.bni.co.id/wss-dev/eclipse-temurin:17.0.7_7-jre-alpine
 
 # Set direktori kerja di dalam container
 WORKDIR /app
