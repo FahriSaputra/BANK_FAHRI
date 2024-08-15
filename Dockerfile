@@ -1,17 +1,31 @@
-# the base image
-FROM amazoncorretto:17
+# Tahap build: menggunakan Maven dengan Java 17
+FROM jtl-tkgiharbor.hq.bni.co.id/library-ocp-dev/maven:3-openjdk-11-slim AS builder
 
-# the JAR file path
-ARG JAR_FILE=target/*.jar
+# Set direktori kerja di dalam container
+WORKDIR /app
 
-# Copy the JAR file from the build context into the Docker image
-COPY ${JAR_FILE} BANK-FAHRI.jar
+# Salin pom.xml dan file lainnya yang diperlukan
+COPY pom.xml .
 
-CMD apt-get update -y
+# Salin direktori src
+COPY src ./src
 
+# Bangun aplikasi
+RUN mvn clean package -DskipTests
+
+# Tahap runtime: menggunakan OpenJDK 17 untuk menjalankan aplikasi
+FROM jtl-tkgiharbor.hq.bni.co.id/library-ocp-dev/alpine:latest
+
+# Set direktori kerja di dalam container
+WORKDIR /app
+
+# Salin file jar yang telah dibangun dari tahap sebelumnya
+COPY --from=build /app/target/BANK-FAHRI-0.0.1-SNAPSHOT.jar BANK-FAHRI.jar
+
+# Variabel lingkungan untuk konfigurasi database
 ENV SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bank
 ENV SPRING_DATASOURCE_USERNAME=root
 ENV SPRING_DATASOURCE_PASSWORD=root
 
-# Set the default command to run the Java application
+# Perintah untuk menjalankan aplikasi
 ENTRYPOINT ["java", "-jar", "BANK-FAHRI.jar"]
