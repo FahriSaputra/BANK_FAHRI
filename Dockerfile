@@ -3,7 +3,7 @@ FROM jtl-tkgiharbor.hq.bni.co.id/wss-dev/maven:3.8.5-openjdk-17-slim AS builder
 ENV HOME=/usr/app
 RUN mkdir -p "$HOME"
 WORKDIR $HOME
-COPY .mvn/settings.xml /root/.m2/settings.xml
+# COPY .mvn/settings.xml /root/.m2/settings.xml
 ADD pom.xml $HOME
 RUN mvn -Dhttps.proxyHost=192.168.45.105 -Dhttps.proxyPort=8080 -Dserver.address=0.0.0.0 verify --fail-never
 #RUN mvn verify --fail-never
