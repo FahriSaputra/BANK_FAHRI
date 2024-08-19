@@ -7,26 +7,26 @@ objects:
     kind: Deployment
     metadata:
       labels:
-        app: bank-fahri
-        app.kubernetes.io/component: bank-fahri
-        app.kubernetes.io/instance: bank-fahri
-        app.kubernetes.io/name: bank-fahri
+        app: bankfahri
+        app.kubernetes.io/component: bankfahri
+        app.kubernetes.io/instance: bankfahri
+        app.kubernetes.io/name: bankfahri
         app.kubernetes.io/part-of: new-wms-test
-      name: bank-fahri
+      name: bankfahri
       namespace: ${NS_NAME}
     spec:
       replicas: 1
       selector:
         matchLabels:
-          app: bank-fahri
+          app: bankfahri
       template:
         metadata:
           labels:
-            app: bank-fahri
-            DeploymentConfig: bank-fahri
+            app: bankfahri
+            DeploymentConfig: bankfahri
         spec:
           containers:
-            - name: bank-fahri
+            - name: bankfahri
               image: ${IMAGE_NAME}
               imagePullPolicy: Always
               env:
@@ -34,7 +34,7 @@ objects:
                   value: Asia/Jakarta
               envFrom:
                 - configMapRef:
-                    name: bank-fahri-cm
+                    name: bankfahri-cm
               resources:
                 limits:
                   cpu: 200m
@@ -59,7 +59,7 @@ objects:
   - apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: bank-fahri-cm
+      name: bankfahri-cm
       namespace: ${NS_NAME}
     data:
       ENV_DB_HOST: "192.168.143.93"
@@ -70,17 +70,17 @@ objects:
   - apiVersion: v1
     kind: Service
     metadata:
-      name: bank-fahri
+      name: bankfahri
       namespace: ${NS_NAME}
       labels:
-        app: bank-fahri
-        app.kubernetes.io/component: bank-fahri
-        app.kubernetes.io/instance: bank-fahri
-        app.kubernetes.io/name: bank-fahri
+        app: bankfahri
+        app.kubernetes.io/component: bankfahri
+        app.kubernetes.io/instance: bankfahri
+        app.kubernetes.io/name: bankfahri
         app.kubernetes.io/part-of: nle
     spec:
       selector:
-        app: bank-fahri
+        app: bankfahri
       ports:
         - name: 8080-tcp
           protocol: TCP
@@ -89,32 +89,32 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
-      name: bank-fahri
+      name: bankfahri
       namespace: ${NS_NAME}
       labels:
-        app: bank-fahri
-        app.kubernetes.io/component: bank-fahri
-        app.kubernetes.io/instance: bank-fahri
-        app.kubernetes.io/name: bank-fahri
+        app: bankfahri
+        app.kubernetes.io/component: bankfahri
+        app.kubernetes.io/instance: bankfahri
+        app.kubernetes.io/name: bankfahri
         app.kubernetes.io/part-of: nle
     spec:
       port:
         targetPort: 8080-tcp
       to:
         kind: Service
-        name: bank-fahri
+        name: bankfahri
         weight: 100
       wildcardPolicy: None
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
-      name: bank-fahri
+      name: bankfahri
       namespace: ${NS_NAME}
     spec:
       scaleTargetRef:
         apiVersion: apps/v1
         kind: Deployment
-        name: bank-fahri
+        name: bankfahri
       minReplicas: 1
       maxReplicas: 3
       metrics:
@@ -131,7 +131,7 @@ parameters:
     value: wss
   - name: IMAGE_NAME
     description: image name
-    value: jtl-tkgiharbor.hq.bni.co.id/wss-dev/bank-fahri:latest
+    value: jtl-tkgiharbor.hq.bni.co.id/wss-dev/bankfahri:latest
     required: true
 ---
-# oc process -f my-template.yml -p NS_NAME=wss -p IMAGE_NAME="jtl-tkgiharbor.hq.bni.co.id/wss-dev/bank-fahri:cr45527" | oc apply -f -
+# oc process -f my-template.yml -p NS_NAME=wss -p IMAGE_NAME="jtl-tkgiharbor.hq.bni.co.id/wss-dev/bankfahri:cr45527" | oc apply -f -
