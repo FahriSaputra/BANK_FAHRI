@@ -20,7 +20,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(UUID uuid) {
+    public Optional<User> getUserById(String uuid) {
         Optional<User> user = userRepository.findById(uuid);
 
         if (user.isEmpty()) {
@@ -34,7 +34,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void deleteUser(UUID uuid) {
+    public void deleteUser(String uuid) {
         Optional<User> user = userRepository.findById(uuid);
 
         if (user.isEmpty()) {
@@ -44,7 +44,7 @@ public class UserService {
         userRepository.deleteById(uuid);
     }
 
-    public void updateUser(UUID uuid, User user) {
+    public void updateUser(String uuid, User user) {
         Optional<User> existingUser = userRepository.findById(uuid);
 
         if(existingUser.isEmpty()) {

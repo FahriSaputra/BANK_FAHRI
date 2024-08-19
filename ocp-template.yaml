@@ -1,0 +1,137 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: ocp-template
+objects:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        app: bank-fahri
+        app.kubernetes.io/component: bank-fahri
+        app.kubernetes.io/instance: bank-fahri
+        app.kubernetes.io/name: bank-fahri
+        app.kubernetes.io/part-of: new-wms-test
+      name: bank-fahri
+      namespace: ${NS_NAME}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: bank-fahri
+      template:
+        metadata:
+          labels:
+            app: bank-fahri
+            DeploymentConfig: bank-fahri
+        spec:
+          containers:
+            - name: bank-fahri
+              image: ${IMAGE_NAME}
+              imagePullPolicy: Always
+              env:
+                - name: TZ
+                  value: Asia/Jakarta
+              envFrom:
+                - configMapRef:
+                    name: bank-fahri-cm
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
+              readinessProbe:
+                httpGet:
+                  path: /actuator/health/readiness
+                  port: 8080
+                failureThreshold: 3
+                initialDelaySeconds: 8
+                periodSeconds: 90
+              livenessProbe:
+                httpGet:
+                  path: /actuator/health/liveness
+                  port: 8080
+                failureThreshold: 3
+                initialDelaySeconds: 8
+                periodSeconds: 90
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: bank-fahri-cm
+      namespace: ${NS_NAME}
+    data:
+      ENV_DB_HOST: "192.168.143.93"
+      ENV_DB_PORT: "1686"
+      ENV_DB_SID: SOASYSQA
+      ENV_DB_USER: soa_app
+      ENV_DB_PASS: soaapp123
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: bank-fahri
+      namespace: ${NS_NAME}
+      labels:
+        app: bank-fahri
+        app.kubernetes.io/component: bank-fahri
+        app.kubernetes.io/instance: bank-fahri
+        app.kubernetes.io/name: bank-fahri
+        app.kubernetes.io/part-of: nle
+    spec:
+      selector:
+        app: bank-fahri
+      ports:
+        - name: 8080-tcp
+          protocol: TCP
+          port: 8080
+          targetPort: 8080
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: bank-fahri
+      namespace: ${NS_NAME}
+      labels:
+        app: bank-fahri
+        app.kubernetes.io/component: bank-fahri
+        app.kubernetes.io/instance: bank-fahri
+        app.kubernetes.io/name: bank-fahri
+        app.kubernetes.io/part-of: nle
+    spec:
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: bank-fahri
+        weight: 100
+      wildcardPolicy: None
+  - apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: bank-fahri
+      namespace: ${NS_NAME}
+    spec:
+      scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: bank-fahri
+      minReplicas: 1
+      maxReplicas: 3
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              averageUtilization: 75
+              type: Utilization
+parameters:
+  - name: NS_NAME
+    description: namespace name
+    required: true
+    value: wss
+  - name: IMAGE_NAME
+    description: image name
+    value: jtl-tkgiharbor.hq.bni.co.id/wss-dev/bank-fahri:latest
+    required: true
+---
+# oc process -f my-template.yml -p NS_NAME=wss -p IMAGE_NAME="jtl-tkgiharbor.hq.bni.co.id/wss-dev/bank-fahri:cr45527" | oc apply -f -

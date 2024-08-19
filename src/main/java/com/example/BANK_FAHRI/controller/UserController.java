@@ -44,12 +44,14 @@ class UserController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<Optional<User>>> getUser(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiResponse<Optional<User>>> getUser(@PathVariable String uuid) {
         Optional<User> data = Optional.empty();
         String error = null;
         int status = 200;
         String message = null;
         HttpStatus httpStatus = HttpStatus.OK;
+
+        System.out.println(uuid);
 
         try {
             data = userService.getUserById(uuid);
@@ -78,7 +80,7 @@ class UserController {
         HttpStatus httpStatus = HttpStatus.OK;
 
         try {
-            UUID uuid = UUID.randomUUID();
+            String uuid = UUID.randomUUID().toString();
 
             user.setUuid(uuid);
             userService.saveUser(user);
@@ -95,7 +97,7 @@ class UserController {
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable UUID uuid) {
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable String uuid) {
         String error = null;
         int status = 200;
         String message = "success";
@@ -120,7 +122,7 @@ class UserController {
     }
 
     @PatchMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable UUID uuid, @RequestBody User user) {
+    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable String uuid, @RequestBody User user) {
         String error = null;
         int status = 200;
         String message = null;
